@@ -1,8 +1,8 @@
-
+//This class is used to store information about the wine in the application
 public class Wine {
-	String name;
-	double price;
-	int quantity;
+	private String name;
+	private double price;
+	private int quantity;
 	
 	public Wine (String theName, double thePrice, int theQuantity) {
 		name = theName;
@@ -14,8 +14,8 @@ public class Wine {
 		return name;
 	}
 	
-	public double getPrice () {
-		return price;
+	public int getPriceInt () {
+		return (int) Math.round(100 * price);
 	}
 	
 	public int getQuantity () {
