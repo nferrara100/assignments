@@ -1,7 +1,6 @@
 //This is the main class of the application
 
 import javax.swing.*;
-import java.awt.event.*;
 
 public class AssEx1 {
 	
