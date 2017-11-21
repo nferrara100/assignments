@@ -21,6 +21,10 @@ public class CipherGUI extends JFrame implements ActionListener
 	private MonoCipher mcipher;
 	private VCipher vcipher;
 	
+	private boolean decode;
+	private String key;
+	private String filename;
+	
 	/**
 	 * The constructor adds all the components to the frame
 	 */
@@ -79,7 +83,9 @@ public class CipherGUI extends JFrame implements ActionListener
 	 */
 	public void actionPerformed(ActionEvent e)
 	{
-	    // your code
+		getKeyword();
+		processFileName();
+		processFile(false);
 	}
 	
 	/** 
@@ -89,7 +95,13 @@ public class CipherGUI extends JFrame implements ActionListener
 	 */
 	private boolean getKeyword()
 	{
-	    return true;  // replace with your code
+		key = keyField.getText();
+		if(key.length() < 1) {// Need regex for capitals
+			JOptionPane.showMessageDialog(null, "Please enter a keyword in capital letters");
+			keyField.setText("");
+			return false;
+		}
+	    return true;
 	}
 	
 	/** 
@@ -101,7 +113,20 @@ public class CipherGUI extends JFrame implements ActionListener
 	 */
 	private boolean processFileName()
 	{
-	    return true;  // replace with your code
+		filename = messageField.getText();
+		char finalChar = filename.charAt(filename.length()-1);
+		if (finalChar != 'P' && finalChar != 'C') {
+			JOptionPane.showMessageDialog(null, "The final character of the filename must be either 'P' or 'C'.");
+			messageField.setText("");
+			return false;
+		}
+		if (finalChar == 'P') {
+			decode = true;
+		}
+		if (finalChar == 'C') {
+			decode = false;
+		}
+	    return true;
 	}
 	
 	/** 
@@ -113,6 +138,37 @@ public class CipherGUI extends JFrame implements ActionListener
 	 */
 	private boolean processFile(boolean vigenere)
 	{
-	    return true;  // replace with your code
+		try {
+			FileReader reader = new FileReader(filename + ".txt");
+			FileWriter writer = new FileWriter(filename.substring(0, filename.length()-1) + (decode?"C":"P") + ".txt");
+			mcipher = new MonoCipher (key);
+			boolean done = false;
+			while (!done) {
+				int next = reader.read();
+				if(next == -1)
+					done = true;
+				else {
+					if (decode) {
+						writer.write(mcipher.decode((char) next));
+					}
+					else {
+						writer.write(mcipher.encode((char) next));
+					}
+				}
+					
+			}
+			reader.close();
+			writer.close();
+			return true;
+		}
+		catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, "Your file could not be found. Please check the filename and try again. ");
+			messageField.setText("");
+		}
+		catch (Exception ex){
+			JOptionPane.showMessageDialog(null, ex.toString());
+			messageField.setText("");
+		}
+		return false;
 	}
 }
