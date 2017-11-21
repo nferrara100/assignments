@@ -121,10 +121,10 @@ public class CipherGUI extends JFrame implements ActionListener
 			return false;
 		}
 		if (finalChar == 'P') {
-			decode = true;
+			decode = false;
 		}
 		if (finalChar == 'C') {
-			decode = false;
+			decode = true;
 		}
 	    return true;
 	}
@@ -140,7 +140,7 @@ public class CipherGUI extends JFrame implements ActionListener
 	{
 		try {
 			FileReader reader = new FileReader(filename + ".txt");
-			FileWriter writer = new FileWriter(filename.substring(0, filename.length()-1) + (decode?"C":"P") + ".txt");
+			FileWriter writer = new FileWriter(filename.substring(0, filename.length()-1) + (decode?"D":"C") + ".txt");
 			mcipher = new MonoCipher (key);
 			boolean done = false;
 			while (!done) {
