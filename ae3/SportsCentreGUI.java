@@ -28,6 +28,9 @@ public class SportsCentreGUI extends JFrame implements ActionListener {
 	private final String classesOutFile = "ClassesOut.txt";
 	private final String attendancesFile = "AttendancesIn.txt";
 	
+	//Main reference...
+	private FitnessProgram program;
+	
 	/**
 	 * Constructor for AssEx3GUI class
 	 */
@@ -40,7 +43,8 @@ public class SportsCentreGUI extends JFrame implements ActionListener {
 		add(display, BorderLayout.CENTER);
 		layoutTop();
 		layoutBottom();
-		// more code needed here
+
+		initLadiesDay();
 	}
 
 	/**
@@ -48,7 +52,16 @@ public class SportsCentreGUI extends JFrame implements ActionListener {
 	 * using data from the file ClassesIn.txt
 	 */
 	public void initLadiesDay() {
-	    // your code here
+		FileReader reader = null;
+		
+		try {
+			String entireInputFile = new Scanner(new File("ClassesIn.txt")).useDelimiter("\\A").next();
+			program = new FitnessProgram(entireInputFile);
+			System.out.println("Id: " + program.getClass(0).getId());
+		}
+		catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null, "File Not Found"); //Further handling?
+		}
 	}
 
 	/**

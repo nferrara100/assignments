@@ -6,7 +6,10 @@ public class VCipher
 {
 	private char [] alphabet;   //the letters of the alphabet
 	private final int SIZE = 26;
-        // more instance variables
+	private char [][] cipher;
+	private int cycle = -1;
+	private int keywordLength;
+     
 	
 	/** 
 	 * The constructor generates the cipher
@@ -14,7 +17,37 @@ public class VCipher
 	 */
 	public VCipher(String keyword)
 	{
-	    // your code
+		keywordLength = keyword.length();
+		
+		alphabet = new char [SIZE];
+		for (int i = 0; i < SIZE; i++)
+			alphabet[i] = (char)('A' + i);
+		
+		cipher = new char [keyword.length()][SIZE];
+		
+		//The first for loop creates each row in the cipher
+		for (int i = 0; i < keyword.length(); i++) {
+			char ch = keyword.charAt(i);
+			cipher[i][0] = ch;
+			
+			//The second writes teh columns
+			for (int x = 1; x < SIZE; x++) {
+				if ((int)(ch + x - 'A') >= SIZE) {
+					cipher[i][x] = (char)(ch + x - SIZE);
+				}
+				else {
+					cipher[i][x] = (char)(ch + x);
+				}
+			}
+		}
+		
+		//Can be used to see the cipher
+//		for (int i = 0; i < keyword.length(); i++) {
+//			for (int x = 0; x < SIZE; x++) {
+//				System.out.print(cipher[i][x]);
+//			}
+//			System.out.println("");
+//		}
 	}
 	/**
 	 * Encode a character
@@ -23,7 +56,21 @@ public class VCipher
 	 */	
 	public char encode(char ch)
 	{
-	    return ' ';  // replace with your code
+		//Checks that the text should be changed
+		if (ch >= 'A' && ch <= 'Z') {
+			if (cycle < keywordLength-1)
+				cycle++;
+			else
+				cycle = 0;
+			
+			//Subtracts A so that it is a number equal to the array
+			int index = (char) (ch - 'A');
+			char returnValue = cipher[cycle][index];
+		    return returnValue;
+		}
+		else {
+			return ch;
+		}
 	}
 	
 	/**
@@ -33,6 +80,23 @@ public class VCipher
 	 */  
 	public char decode(char ch)
 	{
-	    return ' ';  // replace with your code
+		//Checks that the text should be changed
+		if (ch >= 'A' && ch <= 'Z') {
+			if (cycle < keywordLength-1)
+				cycle++;
+			else
+				cycle = 0;
+			
+			int index = -1;
+			for (int i = 0; i < SIZE; i++) {
+				if (ch == cipher[cycle][i]) {
+					index = i;
+				}
+			}
+		    return alphabet[index];
+		}
+		else {
+			return ch;
+		}
 	}
 }

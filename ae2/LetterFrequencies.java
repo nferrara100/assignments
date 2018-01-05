@@ -29,7 +29,12 @@ public class LetterFrequencies
 	 */
 	public LetterFrequencies()
 	{
-	    // your code
+		//create alphabet
+		alphabet = new char [SIZE];
+		for (int i = 0; i < SIZE; i++)
+			alphabet[i] = (char)('A' + i);
+		
+		alphaCounts = new int [SIZE];
 	}
 		
 	/**
@@ -38,7 +43,9 @@ public class LetterFrequencies
 	 */
 	public void addChar(char ch)
 	{
-	    // your code
+		if (ch >= 'A' && ch <= 'Z') {
+		    alphaCounts[(int)(ch - 'A')]++;
+		}
 	}
 	
 	/**
@@ -47,7 +54,16 @@ public class LetterFrequencies
 	 */
 	private double getMaxPC()
         {
-	    return 0.0;  // replace with your code
+		int highest = -1; //Only stays like that in an error
+		for (int i = 0; i < SIZE; i++) {
+			if (alphaCounts[i] > highest) {
+				highest = alphaCounts[i];
+				maxCh = (char) i;
+				maxCh += 'A';
+			}
+			totChars += alphaCounts[i];
+		}
+		return (double) highest / (double) totChars;
 	}
 	
 	/**
@@ -56,6 +72,26 @@ public class LetterFrequencies
 	 */
 	public String getReport()
 	{
-	    return "";  // replace with your code
+		totChars = 0;
+		double max = getMaxPC();
+		
+		//The top column
+		String returnString = "LETTER ANALYSIS\r\n" + 
+				"\r\n" + 
+				"Letter\tFreq\tFreq%\tAvgFreq%\tDiff\r\n" +
+				"\r\n";
+		//The data rows
+		for(int i = 0; i < SIZE; i++) {
+			double freq = Math.round(1000 * ((float)alphaCounts[i] / (float)totChars)) / 10.0;
+			double diff = Math.round(10 * (freq - avgCounts[i])) / 10.0;
+			returnString += String.format("%-10c%-10s%-10s%-10s%-10s", alphabet[i], alphaCounts[i], freq, avgCounts[i], diff);
+			returnString += "\r\n";
+		}
+		
+		//The last row
+		returnString += "\r\n";
+		returnString += String.format("The most frequent letter is %s at %s", maxCh, (Math.round(1000* ((float)alphaCounts[maxCh-'A'] / (float)totChars)) / 10.0));
+		returnString += "%.\r\n";
+	    return returnString;
 	}
 }

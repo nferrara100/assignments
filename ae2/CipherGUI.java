@@ -30,7 +30,7 @@ public class CipherGUI extends JFrame implements ActionListener
 	 */
 	public CipherGUI()
 	{
-		this.setSize(400,150);
+		this.setSize(500,150);
 		this.setLocation(100,100);
 		this.setTitle("Cipher GUI");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -83,9 +83,17 @@ public class CipherGUI extends JFrame implements ActionListener
 	 */
 	public void actionPerformed(ActionEvent e)
 	{
-		getKeyword();
-		processFileName();
-		processFile(false);
+		//Is inside if statements to make sure if something fails everything stops
+		if (getKeyword()) {
+			if (processFileName()) {
+				if(e.getSource()==monoButton) {
+					processFile(false);
+				}
+				if(e.getSource()==vigenereButton) {
+					processFile(true);
+				}
+			}
+		}
 	}
 	
 	/** 
@@ -96,7 +104,8 @@ public class CipherGUI extends JFrame implements ActionListener
 	private boolean getKeyword()
 	{
 		key = keyField.getText();
-		if(key.length() < 1) {// Need regex for capitals
+		//Checks that the key is not empty and only contains capitals. If it does it runs this error block.
+		if(key.length() < 1 || key.matches(".*[^A-Z].*")) {
 			JOptionPane.showMessageDialog(null, "Please enter a keyword in capital letters");
 			keyField.setText("");
 			return false;
@@ -114,7 +123,9 @@ public class CipherGUI extends JFrame implements ActionListener
 	private boolean processFileName()
 	{
 		filename = messageField.getText();
+		//Removes the final letter from the filename so that the old file is not overwritten
 		char finalChar = filename.charAt(filename.length()-1);
+		//Ensures the final character is something to be encrypted or decrypted
 		if (finalChar != 'P' && finalChar != 'C') {
 			JOptionPane.showMessageDialog(null, "The final character of the filename must be either 'P' or 'C'.");
 			messageField.setText("");
@@ -138,27 +149,58 @@ public class CipherGUI extends JFrame implements ActionListener
 	 */
 	private boolean processFile(boolean vigenere)
 	{
+		//Tries to write the file, but catches all errors
 		try {
+			//Sets up the file writers
 			FileReader reader = new FileReader(filename + ".txt");
 			FileWriter writer = new FileWriter(filename.substring(0, filename.length()-1) + (decode?"D":"C") + ".txt");
-			mcipher = new MonoCipher (key);
+			LetterFrequencies freqs = new LetterFrequencies();
+			if(vigenere) {
+				vcipher = new VCipher (key);
+			}
+			else {
+				mcipher = new MonoCipher (key);
+			}
+			
 			boolean done = false;
+			//Continues to loop until the end of file value is given
 			while (!done) {
 				int next = reader.read();
+				//-1 means the end of the file
 				if(next == -1)
 					done = true;
 				else {
+					char charToWrite = 'A';
 					if (decode) {
-						writer.write(mcipher.decode((char) next));
+						if(vigenere) {
+							charToWrite = vcipher.decode((char) next);
+						}
+						else {
+							charToWrite = mcipher.decode((char) next);
+						}
 					}
 					else {
-						writer.write(mcipher.encode((char) next));
+						if(vigenere) {
+							charToWrite = vcipher.encode((char) next);
+						}
+						else {
+							charToWrite = mcipher.encode((char) next);
+						}
 					}
+					//Stores the char in this object so that it can be used later
+					freqs.addChar(charToWrite);
+					writer.write(charToWrite);
 				}
 					
 			}
+			
 			reader.close();
 			writer.close();
+			
+			//Writes the frequency file seperately
+			FileWriter freqsWriter = new FileWriter(filename.substring(0, filename.length()-1) + "F.txt");
+			freqsWriter.write(freqs.getReport());
+			freqsWriter.close();
 			return true;
 		}
 		catch (FileNotFoundException ex) {
@@ -167,6 +209,7 @@ public class CipherGUI extends JFrame implements ActionListener
 		}
 		catch (Exception ex){
 			JOptionPane.showMessageDialog(null, ex.toString());
+			System.out.println(ex.fillInStackTrace());
 			messageField.setText("");
 		}
 		return false;

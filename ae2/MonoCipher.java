@@ -40,9 +40,9 @@ public class MonoCipher
 		}
 		
 		// print cipher array for testing and tutors
-		for (int i = 0; i < SIZE; i++) {
-			System.out.print(cipher[i]);
-		}
+//		for (int i = 0; i < SIZE; i++) {
+//			System.out.print(cipher[i]);
+//		}
 		
 	}
 	
@@ -53,6 +53,7 @@ public class MonoCipher
 	 */
 	public char encode(char ch)
 	{
+		//Checks that the text is something to be encrypted
 		if (ch >= 'A' && ch <= 'Z') {
 			int index = (char) (ch - 'A');
 		    return cipher[index];
@@ -69,8 +70,10 @@ public class MonoCipher
 	 */
 	public char decode(char ch)
 	{
+		//Checks that the text is something to be decrypted
 		if (ch >= 'A' && ch <= 'Z') {
-			int index = -1;
+			int index = -1; //Only stays that way if there is an error
+			//Searches for the char in the alphabet
 			for (int i = 0; i < SIZE; i++) {
 				if (ch == cipher[i]) {
 					index = i;

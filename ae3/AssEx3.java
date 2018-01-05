@@ -1,6 +1,7 @@
 /**
  * The main class
  */
+
 public class AssEx3 {
 	/**
 	 * The main method
