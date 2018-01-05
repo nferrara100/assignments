@@ -1,5 +1,7 @@
 /**
  * The main class
+ * @author Nicholas Ferrara
+ * Completes Programming Assessed Exercise 3
  */
 
 public class AssEx3 {
