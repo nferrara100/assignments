@@ -31,16 +31,16 @@ public class Simulation {
 			carThreads[i].start();
 		}
 		
-		refresh(50);//Might need to redo this.
+		refresh(500);//Might need to redo this.
 	}
 	
 	private void refresh (int iterationsLeft) {
 		System.out.println(grid.print());
 		
-		if (iterationsLeft > 0) {
+		if (iterationsLeft > 0 && grid.carsLeft()) {
 			try {
-				Thread.sleep(20);
-				refresh(iterationsLeft -1);
+				Thread.sleep(50);//temp
+					refresh(iterationsLeft -1);
 			}
 			catch (InterruptedException inEx) {
 				System.out.print("Simulation Interupted");

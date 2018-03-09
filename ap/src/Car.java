@@ -8,14 +8,12 @@ public class Car implements Runnable {
 	private int speed;
 	private int nSlot;
 	private int mSlot;
-	private int prevNSlot;
-	private int prevMSlot;
 	private Grid grid;
 	private boolean isN;
 	
 	
 	public Car (Grid grid) {
-		speed = ThreadLocalRandom.current().nextInt(5, 40);
+		speed = ThreadLocalRandom.current().nextInt(100, 500);
 		this.grid = grid;
 		
 		if(ThreadLocalRandom.current().nextInt(2) == 1) {
@@ -36,15 +34,13 @@ public class Car implements Runnable {
 	public void run () {
 		try {
 			boolean running = true;
-			while(running  && Thread.currentThread().isInterrupted()==false) {//temp
+			while(running) {//temp
 				//System.out.println("Car " + i);
 				Thread.sleep(speed);
 				if (isN) {
-					prevMSlot = mSlot;
 					mSlot++;
 				}
 				else {
-					prevNSlot = nSlot;
 					nSlot++;
 				}
 				//System.out.println(mSlot + " " + nSlot);
@@ -56,9 +52,6 @@ public class Car implements Runnable {
 		catch(InterruptedException ex) {
 			System.out.println("Interupted");
 		}
-		catch(ArrayIndexOutOfBoundsException ex) {
-			System.out.println("Car dead");
-		}
 	}
 	
 	public int getN () {
@@ -66,12 +59,6 @@ public class Car implements Runnable {
 	}
 	public int getM () {
 		return mSlot;
-	}
-	public int getPrevN () {
-		return prevNSlot;
-	}
-	public int getPrevM () {
-		return prevMSlot;
 	}
 	public boolean getIsN () {
 		return isN;

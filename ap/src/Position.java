@@ -17,4 +17,8 @@ public class Position {
 	Car getCar() {
 		return car;
 	}
+	
+	void setCar (Car car) {
+		this.car = car;
+	}
 }

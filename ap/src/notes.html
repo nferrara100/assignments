@@ -1,1 +1,50 @@
 (carSlots[n][m].getIsN())?'o':'-'
+
+Thread.currentThread().isInterrupted()==false
+
+
+
+
+
+	public boolean setCarSlot (Car car) {
+		//System.out.println("n: " + car.getN() + " m: " + car.getM());
+		//System.out.println(carSlots[car.getN()][car.getM()] + "String");
+		//try{Thread.sleep(2);}catch(Exception Ex){}
+		
+		
+
+	    //lock.lock();
+		Lock lock = new ReentrantLock();
+	    Condition notFull = lock.newCondition();
+	    
+	    try {
+	    
+	    	while (carSlots[car.getN()][car.getM()] != null) {
+                notFull.await();
+            }
+	    	
+	    	try {
+		    	lock.lock();
+		    	for(int m = 0; m < mSlots; m++) {
+					for(int n = 0; n < nSlots; n++) {
+						if (carSlots[n][m] == car) {
+							carSlots[n][m] = null;
+						}
+					}
+				}
+				
+				carSlots[car.getN()][car.getM()] = car;
+				this.notifyAll();
+	    	}
+	    	finally {
+	    		lock.unlock();
+	    	}
+	    }
+	    catch (InterruptedException ex) {
+	    	//lock.unlock();
+	    	//setCarSlot(car);
+	    	
+	    }
+	    return false;
+	}
+}
