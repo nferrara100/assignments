@@ -1,21 +1,21 @@
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.*;
 
 public class Grid {
-	private Position[][] slots;
+	
+	private Slot[][] slots;
 	int nSlots;
 	int mSlots;
 	Set<Car> cars = new HashSet<Car>();
 	
 	public Grid (int nSlots, int mSlots) {
-		slots = new Position[nSlots][mSlots];
+		slots = new Slot[nSlots][mSlots];
+		
     	for(int m = 0; m < mSlots; m++) {
 			for(int n = 0; n < nSlots; n++) {
-				slots[n][m] = new Position();
+				slots[n][m] = new Slot();
 			}
 		}
+    	
 		this.nSlots = nSlots;
 		this.mSlots = mSlots;
 	}
@@ -24,7 +24,7 @@ public class Grid {
 		String newline = System.getProperty("line.separator");
 		String margin = "";
 		for(int i = 0; i < nSlots; i++) {
-			margin += "----";
+			margin += "--";
 		}
 		String returnString = margin + newline;
 		
@@ -40,30 +40,24 @@ public class Grid {
 		return returnString;
 	}
 	
-	public boolean setCarSlot (Car car) {
+	public boolean updateCarSlot (Car car) {
 		if(car.getN() >= nSlots || car.getM() >= mSlots) {
+			//System.out.println(car.getN()+ " " + nSlots + " " + car.getM()+ " " + mSlots);
 			removeCar(car);
+			cars.remove(car);
 			return false;
 		}
 		else {
-			Position slot = slots[car.getN()][car.getM()];
-			slot.lock.lock();
-			removeCar(car);
-			slot.setCar(car);
 			cars.add(car);
-			return true;
+			boolean success = slots[car.getN()][car.getM()].setCar(car);
+			removeCar(car);
+			return success;
 		}
 	}
 	
 	private void removeCar (Car car) {
-    	for(int m = 0; m < mSlots; m++) {
-			for(int n = 0; n < nSlots; n++) {
-				if (slots[n][m].getCar() == car) {
-					slots[n][m].setCar(null);
-					slots[n][m].lock = new ReentrantLock();
-					cars.remove(car);
-				}
-			}
+		if(car.getSetupComplete()) {
+			slots[car.getPrevN()][car.getPrevM()].setCar(null);
 		}
 	}
 	

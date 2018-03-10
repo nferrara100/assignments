@@ -1,40 +1,39 @@
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class Car implements Runnable {
+public class Car extends Thread {
+	
 	private int speed;
 	private int nSlot;
 	private int mSlot;
 	private Grid grid;
 	private boolean isN;
+	private boolean setupComplete = false;
 	
 	
 	public Car (Grid grid) {
-		speed = ThreadLocalRandom.current().nextInt(100, 500);
+		speed = ThreadLocalRandom.current().nextInt(750, 1500);
 		this.grid = grid;
 		
-		if(ThreadLocalRandom.current().nextInt(2) == 1) {
-			nSlot = ThreadLocalRandom.current().nextInt(1, grid.nSlots);
-			mSlot = 0;
-			isN = true;
-			grid.setCarSlot(this); //Need to prevent double slotting cars
-		}
-		else {
-			mSlot = ThreadLocalRandom.current().nextInt(1, grid.mSlots);
-			nSlot = 0;
-			isN = false;
-			grid.setCarSlot(this);
-		}
+		do {
+			if(ThreadLocalRandom.current().nextInt(2) == 1) {
+				nSlot = ThreadLocalRandom.current().nextInt(1, grid.nSlots);
+				mSlot = 0;
+				isN = true;
+			}
+			else {
+				mSlot = ThreadLocalRandom.current().nextInt(1, grid.mSlots);
+				nSlot = 0;
+				isN = false;
+			}
+		} while (!grid.updateCarSlot(this));
+		setupComplete = true;
 	}
 	
-	//@Override
 	public void run () {
+		//System.out.println("running");
 		try {
 			boolean running = true;
-			while(running) {//temp
+			while(running) {
 				//System.out.println("Car " + i);
 				Thread.sleep(speed);
 				if (isN) {
@@ -44,7 +43,7 @@ public class Car implements Runnable {
 					nSlot++;
 				}
 				//System.out.println(mSlot + " " + nSlot);
-				if(!grid.setCarSlot(this)){
+				if(!grid.updateCarSlot(this)){
 					running = false;
 				}
 			}
@@ -57,10 +56,34 @@ public class Car implements Runnable {
 	public int getN () {
 		return nSlot;
 	}
+	
 	public int getM () {
 		return mSlot;
 	}
+	
+	public int getPrevN () {
+		if(!isN) {
+			return nSlot - 1;
+		}
+		else {
+			return nSlot;
+		}
+	}
+	
+	public int getPrevM () {
+		if(isN) {
+			return mSlot - 1;
+		}
+		else {
+			return mSlot;
+		}
+	}
+	
 	public boolean getIsN () {
 		return isN;
+	}
+	
+	public boolean getSetupComplete () {
+		return setupComplete;
 	}
 }

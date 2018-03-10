@@ -48,3 +48,85 @@ Thread.currentThread().isInterrupted()==false
 	    return false;
 	}
 }
+
+
+
+					System.out.println("Car N: " + car.getN() + " Car M: " + car.getM());
+					Position slot;
+					if(car.getIsN()) {
+						slot = slots[car.getN()-1][car.getM()];
+					}
+					else {
+						slot = slots[car.getN()][car.getM()-1];
+					}
+					
+					slot.setCar(null);
+					slot.lock = new ReentrantLock();
+					cars.remove(car);
+					
+					
+					
+					
+					
+					
+					
+					
+					/**
+ * @author nick
+ *
+ */
+
+import java.util.concurrent.locks.*;
+
+public class Slot {
+	private Car car;
+	private Lock carLock = new ReentrantLock();
+	private Condition carCondition = carLock.newCondition();
+	
+	Car getCar() {
+		return car;
+	}
+	
+	boolean setCar (Car car) {
+		//System.out.println(car);
+		if(car == null) {
+			try {
+				carLock.lock();
+				this.car = car;
+				carCondition.signalAll();
+			}
+			finally {
+				//System.out.println("Unlocking " + car);
+				carLock.unlock();
+			}
+		}
+		else {
+			if (this.car != null && car.getSetupComplete() == false) {
+				//System.out.println("Setup Complete");
+				return false;
+			}
+			else {
+				try {
+					//System.out.println("Locking " + car);
+					carLock.lock();
+					if (car == null) {
+						while(this.car != null) {
+							System.out.println("Not null " + car);
+							carCondition.await();
+						}
+					}
+					//System.out.println("Awake " + car);
+					this.car = car;
+					carCondition.signalAll();
+				}
+				catch(InterruptedException e){
+					e.printStackTrace();
+				}finally {
+					//System.out.println("Unlocking " + car);
+					carLock.unlock();
+				}
+			}
+		}
+		return true;
+	}
+}
