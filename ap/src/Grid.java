@@ -30,7 +30,7 @@ public class Grid {
 		
 		for(int m = 0; m < mSlots; m++) {
 			for(int n = 0; n < nSlots; n++) {
-				char carChar = (slots[n][m].getCar() == null)?' ':(slots[n][m].getCar().getIsN())?'o':'-';
+				char carChar = (slots[n][m].getCar() == null)?' ':(slots[n][m].getCar().getVelocity().getM() != 0)?'o':'-';
 				returnString += carChar + "|";
 			}
 			returnString += newline;
@@ -41,27 +41,42 @@ public class Grid {
 	}
 	
 	public boolean updateCarSlot (Car car) {
-		if(car.getN() >= nSlots || car.getM() >= mSlots) {
-			//System.out.println(car.getN()+ " " + nSlots + " " + car.getM()+ " " + mSlots);
-			removeCar(car);
+		boolean returnVal;
+		
+		if(!withinBounds(car.getN(), car.getM())) {
 			cars.remove(car);
-			return false;
+			returnVal = false;
 		}
 		else {
 			cars.add(car);
-			boolean success = slots[car.getN()][car.getM()].setCar(car);
-			removeCar(car);
-			return success;
+			returnVal = slots[car.getN()][car.getM()].setCar(car);
 		}
-	}
-	
-	private void removeCar (Car car) {
-		if(car.getSetupComplete()) {
+		
+		if(withinBounds(car.getPrevN(), car.getPrevM())) {
+			//System.out.println(car.getPrevN() + " " + car.getPrevM());
 			slots[car.getPrevN()][car.getPrevM()].setCar(null);
 		}
+		
+		return returnVal;
+	}
+	
+	public boolean withinBounds (int n, int m) {
+		return n < nSlots && n >= 0 && m < mSlots && m >= 0;
 	}
 	
 	public boolean carsLeft () {
 		return !cars.isEmpty();
+	}
+	
+	public int getNSlots () {
+		return nSlots;
+	}
+	
+	public int getMSlots () {
+		return mSlots;
+	}
+	
+	public boolean reserve (int nSlot, int mSlot) {
+		return slots[nSlot][mSlot].reserve();
 	}
 }

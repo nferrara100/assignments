@@ -1,51 +1,28 @@
-import java.util.concurrent.ThreadLocalRandom;
-
 public class Car extends Thread {
 	
-	private int speed;
 	private int nSlot;
 	private int mSlot;
 	private Grid grid;
-	private boolean isN;
-	private boolean setupComplete = false;
+	private Velocity velocity;
 	
 	
-	public Car (Grid grid) {
-		speed = ThreadLocalRandom.current().nextInt(750, 1500);
+	public Car (Grid grid, Velocity velocity, int nSlot, int mSlot) {
 		this.grid = grid;
-		
-		do {
-			if(ThreadLocalRandom.current().nextInt(2) == 1) {
-				nSlot = ThreadLocalRandom.current().nextInt(1, grid.nSlots);
-				mSlot = 0;
-				isN = true;
-			}
-			else {
-				mSlot = ThreadLocalRandom.current().nextInt(1, grid.mSlots);
-				nSlot = 0;
-				isN = false;
-			}
-		} while (!grid.updateCarSlot(this));
-		setupComplete = true;
+		this.velocity = velocity;
+		this.nSlot = nSlot;
+		this.mSlot = mSlot;
 	}
 	
 	public void run () {
-		//System.out.println("running");
 		try {
-			boolean running = true;
-			while(running) {
-				//System.out.println("Car " + i);
-				Thread.sleep(speed);
-				if (isN) {
-					mSlot++;
-				}
-				else {
-					nSlot++;
-				}
-				//System.out.println(mSlot + " " + nSlot);
+			while(true) {
 				if(!grid.updateCarSlot(this)){
-					running = false;
+					break;
 				}
+				
+				Thread.sleep(velocity.getSpeed());
+				nSlot += velocity.getN();
+				mSlot += velocity.getM();
 			}
 		}
 		catch(InterruptedException ex) {
@@ -62,28 +39,14 @@ public class Car extends Thread {
 	}
 	
 	public int getPrevN () {
-		if(!isN) {
-			return nSlot - 1;
-		}
-		else {
-			return nSlot;
-		}
+		return nSlot - velocity.getN();
 	}
 	
 	public int getPrevM () {
-		if(isN) {
-			return mSlot - 1;
-		}
-		else {
-			return mSlot;
-		}
+		return mSlot - velocity.getM();
 	}
 	
-	public boolean getIsN () {
-		return isN;
-	}
-	
-	public boolean getSetupComplete () {
-		return setupComplete;
+	public Velocity getVelocity () {
+		return velocity;
 	}
 }
