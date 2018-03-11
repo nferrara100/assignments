@@ -79,4 +79,16 @@ public class Grid {
 	public boolean reserve (int nSlot, int mSlot) {
 		return slots[nSlot][mSlot].reserve();
 	}
+	
+	public int ceilIndex (int index, boolean isN) {
+		if(index >= 0) {
+			return 0;
+		}
+		else if (isN) {
+			return nSlots - 1;
+		}
+		else {
+			return mSlots - 1;
+		}
+	}
 }

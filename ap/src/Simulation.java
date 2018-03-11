@@ -1,42 +1,41 @@
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Simulation {
 	
+	private int nSlots = 20;
+	private int mSlots = 10;
+	private int maxRefreshes = 2000;
+	private int refreshInterval = 20;
 	private Grid grid;
-	private int numCars;
 	private ArrayList<Car> cars;
+	ArrayList<CarGenerator> generators;
+	private static Simulation sim;
+	private Statistics stats;
 	
-	public Simulation (int nSlots, int mSlots, final int maxRefreshes) {	
-
+	public static void main (String[] args) {	
+		sim = new Simulation();
+		sim.start();
+	}
+	
+	public void start () {
 		grid = new Grid (nSlots, mSlots);
-		numCars = ThreadLocalRandom.current().nextInt(1, nSlots + mSlots - 2);
-		cars = new ArrayList<Car>();
+		generators = new ArrayList();
 		
+		ArrayList<Integer> eastFast = new ArrayList<Integer>(Arrays.asList(1, 3, 5));
+		generators.add(new CarGenerator(grid, eastFast));
 		
-		for(int i = 0; i < numCars; i++) {
-			int speed = ThreadLocalRandom.current().nextInt(750, 1500);
-			int nSlot;
-			int mSlot;
-			Velocity velocity;
-			
-			do {
-				if(ThreadLocalRandom.current().nextInt(2) == 1) {
-					nSlot = ThreadLocalRandom.current().nextInt(1, grid.nSlots);
-					mSlot = 0;
-					velocity = new Velocity(0, 1, speed);
-				}
-				else {
-					mSlot = ThreadLocalRandom.current().nextInt(1, grid.mSlots);
-					nSlot = 0;
-					velocity = new Velocity(1, 0, speed);
-				}
-			} while (!grid.reserve(nSlot, mSlot));
-			
-			cars.add(new Car(grid, velocity, nSlot, mSlot));
-			cars.get(i).start();
-		}
+		generators.add(new WestGenerator(grid, 700));
 		
+		ArrayList<Integer> northFast = new ArrayList<Integer>(Arrays.asList(1, 5, 6));
+		generators.add(new CarGenerator(grid, northFast, new Velocity (0, -1, 900)));
+		
+		ArrayList<Integer> southSlow = new ArrayList<Integer>(Arrays.asList(3, 4, 7));
+		generators.add(new CarGenerator(grid, southSlow, new Velocity (0, 1, 1200, 800), 5));
+		
+		ArrayList<Integer> southFast = new ArrayList<Integer>(Arrays.asList(2, 8, 9));
+		generators.add(new CarGenerator(grid, southFast, new Velocity (0, 1, 600)));
+	
 		refresh(maxRefreshes);
 	}
 	
@@ -45,7 +44,7 @@ public class Simulation {
 		
 		if (grid.carsLeft() && remainingRefreshes > 0) {
 			try {
-				Thread.sleep(20);
+				Thread.sleep(refreshInterval);
 				refresh(remainingRefreshes - 1);
 			}
 			catch (InterruptedException ex) {
@@ -53,7 +52,8 @@ public class Simulation {
 			}
 		}
 		else {
-			System.out.println("------ Simulation Ended ------");
+			stats = new Statistics(generators);
+			System.out.println(stats.tabulate());
 		}
 	}
 	

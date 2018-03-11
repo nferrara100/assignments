@@ -4,6 +4,7 @@ public class Car extends Thread {
 	private int mSlot;
 	private Grid grid;
 	private Velocity velocity;
+	private int travelTime = 0;
 	
 	
 	public Car (Grid grid, Velocity velocity, int nSlot, int mSlot) {
@@ -21,6 +22,7 @@ public class Car extends Thread {
 				}
 				
 				Thread.sleep(velocity.getSpeed());
+				travelTime += velocity.getSpeed();
 				nSlot += velocity.getN();
 				mSlot += velocity.getM();
 			}
@@ -48,5 +50,9 @@ public class Car extends Thread {
 	
 	public Velocity getVelocity () {
 		return velocity;
+	}
+	
+	public int getTravelTime () {
+		return travelTime;
 	}
 }
