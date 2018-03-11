@@ -16,11 +16,11 @@ public abstract class CarGenerator
 	private int numCars = 2;
 	
 	
-	//Used by subclasses
+	//Used by subclasses.
 	public CarGenerator () {}
 	
 	
-	//Called by subclasses after construction complete
+	//Called by subclasses after construction complete.
 	public void generate ()
 	{
 		//Since the class places cars on a grid the gird must be given by the 
@@ -34,10 +34,11 @@ public abstract class CarGenerator
 		//be placed in different lanes.
 		Collections.shuffle(lanes);
 		
-		//Generates all the cars specified by numCars
+		//Generates all the cars specified by numCars.
 		for(int i = 0, x = 0; i < numCars; i++, x++)
 		{
 			//If there is a car in every lane the first lane gets another
+			//and so on.
 			if (i == lanes.size() && lanes.size() > 0)
 			{
 				x = 0;
@@ -57,12 +58,12 @@ public abstract class CarGenerator
 			}
 			carVelocity.randomizeSpeed();
 			
-			//Sets the starting position
+			//Sets the starting position.
 			int mSlot;
 			int nSlot;
 			if (velocity.getN() == 0)
 			{
-				//Places the car on the correct side of the grid
+				//Places the car on the correct side of the grid.
 				mSlot = grid.ceilIndex(velocity.getM(), false);
 				nSlot = lanes.get(x);
 			}
@@ -72,7 +73,7 @@ public abstract class CarGenerator
 				mSlot = lanes.get(x);
 			}
 			
-			//Starts the car
+			//Starts the car.
 			cars.add(new Car(grid, carVelocity, nSlot, mSlot));
 			cars.get(i).start();
 		}

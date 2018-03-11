@@ -1,6 +1,7 @@
 /*
 	Organizes the various Slot classes which 
-	store what places are occupied.
+	store what places are occupied. Also handles
+	graphical output.
 	Developed for the University of Glasgow
 	Advanced Programming exercise spring 2018.
 	@author Nicholas Ferrara
@@ -30,6 +31,36 @@ public class Grid
     	
 		this.nSlots = nSlots;
 		this.mSlots = mSlots;
+	}
+	
+	
+	//Prints the screen into the terminal. Recursively continues until the
+	//simulation is over.
+	public void refresh (int remainingRefreshes, int refreshInterval, Simulation sim)
+	{
+		System.out.println(print());
+		
+		//Terminates if there are no cars let or the maximum amount of
+		//refreshes is exceeded.
+		if (carsLeft() && remainingRefreshes > 0)
+		{
+			try
+			{
+				//Pauses before printing the next frame.
+				Thread.sleep(refreshInterval);
+				refresh(remainingRefreshes - 1, refreshInterval, sim);
+			}
+			catch (InterruptedException ex)
+			{
+				ex.printStackTrace();
+			}
+		}
+		else
+		{
+			//Calls the callback method for custom cleanup depending on the
+			//particular of simulation.
+			sim.completed();
+		}
 	}
 	
 	
