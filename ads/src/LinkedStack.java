@@ -2,6 +2,7 @@ import java.util.NoSuchElementException;
 
 public class LinkedStack<E> implements Stack<E> {
 	private Node<E> top;
+	
 	/////////////// Inner class ///////////////
 	private static class Node<E> {
 		public E element;
@@ -12,21 +13,20 @@ public class LinkedStack<E> implements Stack<E> {
 		}
 	}
 	
-     /////////////// Constructor ///////////////
-     public LinkedStack () {
+    /////////////// Constructor ///////////////
+    public LinkedStack () {
     	 top = null;
-     }
+    }
      
-     /////////////// Accessors ///////////////
-     public boolean empty () {
-    	 return (top == null);
-     }
+    /////////////// Accessors ///////////////
+    public boolean empty () {
+    	return (top == null);
+    }
 
-     public E peek () {
-    	 if (top == null)  throw new NoSuchElementException("Can't peek empty stack");
-    	 return top.element;
-    	 }
-
+    public E peek () {
+    	if (top == null)  throw new NoSuchElementException("Can't peek empty stack");
+    	return top.element;
+    }
 
     //////////////Transformers ///////////////
     public void clear () {
@@ -38,15 +38,10 @@ public class LinkedStack<E> implements Stack<E> {
     	top = temp;
     }
 
-		
-	
 	public E pop() {
 		if (top == null)  throw new NoSuchElementException("Can't pop empty stack");
 		E topElem = top.element;
 		top = top.next;
 		return topElem;
 	}
-
-	
-
 }
